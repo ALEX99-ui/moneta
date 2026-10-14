@@ -69,3 +69,24 @@ test('tema claro y oscuro', async ({ page }) => {
   await page.getByRole('button', { name: /Modo (claro|oscuro)/ }).click()
   await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(dark)
 })
+
+test('la búsqueda lleva a la página correcta aunque haya muchos movimientos', async ({ page }) => {
+  // Crea 30 gastos para que el tercero quede en una página posterior del historial.
+  await page.goto('/#/gastos')
+  await page.waitForSelector('aside')
+  const stamp = String(Date.now()).slice(-6)
+  for (let i = 1; i <= 30; i++) {
+    await page.getByRole('button', { name: 'Nuevo gasto' }).click()
+    const d = page.getByRole('dialog')
+    await d.getByLabel('Valor', { exact: true }).fill(String(1000 + i))
+    await d.getByLabel('Categoría', { exact: true }).selectOption({ label: 'Otros' })
+    await d.getByLabel('Descripción', { exact: true }).fill(`Masivo ${stamp} ${i}`)
+    await d.getByRole('button', { name: 'Guardar', exact: true }).click()
+    await expect(d).toBeHidden()
+  }
+  await page.keyboard.press('Control+k')
+  await page.getByLabel('Buscar', { exact: true }).fill(`Masivo ${stamp} 3`)
+  await page.getByRole('dialog').getByText(`Masivo ${stamp} 3`, { exact: true }).first().click()
+  await expect(page).toHaveURL(/#\/gastos/)
+  await expect(page.getByRole('row', { name: new RegExp(`Masivo ${stamp} 3\\b`) })).toBeVisible()
+})

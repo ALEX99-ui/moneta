@@ -76,7 +76,11 @@ export function TransactionsScreen({ type }: { type: TxType }) {
   const categories = data.categories.filter((c) => c.kind === type)
   const filterCount = [text, categoryId, accountId, tag, min !== null, max !== null].filter(Boolean).length
 
-  React.useEffect(() => setPage(0), [filter, sort])
+  // Al cambiar filtros u orden se vuelve a la primera página (salvo mientras se resalta un movimiento llegado desde la búsqueda).
+  React.useEffect(() => {
+    if (!highlight) setPage(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, sort])
 
   // Llegar desde la búsqueda global: mostrar todo el historial y resaltar el movimiento.
   React.useEffect(() => {
