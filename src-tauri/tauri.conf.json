@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "MONETA",
+  "version": "0.1.0",
+  "identifier": "com.moneta.personalfinance",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "MONETA — Personal Finance",
+        "width": 1320,
+        "height": 840,
+        "minWidth": 920,
+        "minHeight": 620,
+        "center": true,
+        "backgroundColor": "#0B1120"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'none'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "category": "Finance",
+    "shortDescription": "Finanzas personales locales y privadas",
+    "longDescription": "MONETA es una aplicación de escritorio para administrar tus finanzas personales sin conexión: ingresos, gastos, cuentas, presupuestos, metas de ahorro y respaldos locales.",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "windows": {
+      "nsis": { "installMode": "currentUser", "languages": ["Spanish"], "displayLanguageSelector": false },
+      "webviewInstallMode": { "type": "downloadBootstrapper" }
+    }
+  }
+}
