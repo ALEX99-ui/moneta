@@ -69,7 +69,7 @@ export function IncomeExpenseChart({ series, height = 260 }: { series: MonthDatu
           <BarChart data={series} barGap={2} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke={C.grid} />
             <XAxis dataKey="label" {...axisProps} />
-            <YAxis {...axisProps} width={64} tickFormatter={formatCompact} />
+            <YAxis {...axisProps} width={76} tickFormatter={formatCompact} />
             <Tooltip
               cursor={{ fill: 'color-mix(in srgb, var(--muted-foreground) 10%, transparent)' }}
               content={({ active, payload, label }) =>
@@ -107,7 +107,7 @@ export function SavingsTrendChart({ series, height = 220 }: { series: MonthDatum
           <BarChart data={series} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke={C.grid} />
             <XAxis dataKey="label" {...axisProps} />
-            <YAxis {...axisProps} width={64} tickFormatter={formatCompact} />
+            <YAxis {...axisProps} width={76} tickFormatter={formatCompact} />
             <ReferenceLine y={0} stroke="var(--muted-foreground)" strokeOpacity={0.5} />
             <Tooltip
               cursor={{ fill: 'color-mix(in srgb, var(--muted-foreground) 10%, transparent)' }}
@@ -150,8 +150,8 @@ export function CategoryDonut({ items, total, maxItems = 6 }: { items: CategoryT
   }, [items, l.categories, maxItems])
   const a = active !== null ? slices[active] : null
   return (
-    <div className="flex flex-col items-center gap-4 sm:flex-row">
-      <div className="relative size-[190px] shrink-0" role="img" aria-label="Distribución de gastos por categoría">
+    <div className="flex flex-col items-center gap-4">
+      <div className="relative size-[200px] shrink-0" role="img" aria-label="Distribución de gastos por categoría">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie data={slices} dataKey="value" nameKey="name" innerRadius={62} outerRadius={90} paddingAngle={2} stroke={C.surface} strokeWidth={2} onMouseEnter={(_, i) => setActive(i)} onMouseLeave={() => setActive(null)} startAngle={90} endAngle={-270}>
@@ -198,7 +198,7 @@ export function BalanceChart({ points, height = 220 }: { points: BalancePointDat
           </defs>
           <CartesianGrid vertical={false} stroke={C.grid} />
           <XAxis dataKey="label" {...axisProps} minTickGap={24} />
-          <YAxis {...axisProps} width={64} tickFormatter={formatCompact} domain={['auto', 'auto']} />
+          <YAxis {...axisProps} width={76} tickFormatter={formatCompact} domain={['auto', 'auto']} />
           <Tooltip
             cursor={{ stroke: 'var(--muted-foreground)', strokeOpacity: 0.4 }}
             content={({ active, payload, label }) =>
@@ -226,7 +226,7 @@ export function ComparisonChart({ rows, currentLabel, previousLabel, height = 22
           <BarChart data={rows} barGap={3} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke={C.grid} />
             <XAxis dataKey="name" {...axisProps} />
-            <YAxis {...axisProps} width={64} tickFormatter={formatCompact} />
+            <YAxis {...axisProps} width={76} tickFormatter={formatCompact} />
             <ReferenceLine y={0} stroke="var(--muted-foreground)" strokeOpacity={0.5} />
             <Tooltip
               cursor={{ fill: 'color-mix(in srgb, var(--muted-foreground) 10%, transparent)' }}
@@ -291,7 +291,7 @@ export function SourceTrendChart() {
                 <BarChart data={rows} margin={{ top: 8, right: 4, left: 0, bottom: 0 }}>
                   <CartesianGrid vertical={false} stroke={C.grid} />
                   <XAxis dataKey="label" {...axisProps} interval={1} />
-                  <YAxis {...axisProps} width={64} tickFormatter={formatCompact} />
+                  <YAxis {...axisProps} width={76} tickFormatter={formatCompact} />
                   <Tooltip
                     cursor={{ fill: 'color-mix(in srgb, var(--muted-foreground) 10%, transparent)' }}
                     content={({ active, payload, label }) =>

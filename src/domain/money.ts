@@ -36,11 +36,11 @@ function group(digits: string): string {
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
-/** $ 1.500.000 · formato colombiano (punto de miles, sin decimales). */
+/** $ 1.500.000 · formato colombiano (punto de miles, sin decimales). Usa espacio duro para que no se parta en dos líneas. */
 export function formatMoney(n: Money, opts: { sign?: boolean; symbol?: boolean } = {}): string {
   const abs = Math.abs(Math.trunc(n))
   const body = group(String(abs))
-  const sym = opts.symbol === false ? '' : '$ '
+  const sym = opts.symbol === false ? '' : '$\u00a0'
   const sign = n < 0 ? '-' : opts.sign && n > 0 ? '+' : ''
   return `${sign}${sym}${body}`
 }
@@ -53,10 +53,10 @@ export function formatCompact(n: Money): string {
     const s = (Math.round(v * 10) / 10).toString().replace('.', ',')
     return s
   }
-  if (abs >= 1_000_000_000) return `${sign}$ ${fmt(abs / 1_000_000_000)} MM`
-  if (abs >= 1_000_000) return `${sign}$ ${fmt(abs / 1_000_000)} M`
-  if (abs >= 1_000) return `${sign}$ ${fmt(abs / 1_000)} mil`
-  return `${sign}$ ${abs}`
+  if (abs >= 1_000_000_000) return `${sign}$\u00a0${fmt(abs / 1_000_000_000)}\u00a0MM`
+  if (abs >= 1_000_000) return `${sign}$\u00a0${fmt(abs / 1_000_000)}\u00a0M`
+  if (abs >= 1_000) return `${sign}$\u00a0${fmt(abs / 1_000)}\u00a0mil`
+  return `${sign}$\u00a0${abs}`
 }
 
 /**

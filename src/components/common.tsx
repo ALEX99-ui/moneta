@@ -65,7 +65,7 @@ export function StatCard({
 }
 
 /** Variación porcentual con flecha; `goodWhenUp` define si subir es positivo (ingresos) o negativo (gastos). */
-export function Delta({ current, previous, goodWhenUp = true }: { current: number; previous: number; goodWhenUp?: boolean }) {
+export function Delta({ current, previous, goodWhenUp = true, label = 'vs. anterior' }: { current: number; previous: number; goodWhenUp?: boolean; label?: string }) {
   if (!previous) return <span className="text-muted">sin período anterior</span>
   const change = ((current - previous) / Math.abs(previous)) * 100
   if (Math.abs(change) < 0.5) return <span className="text-muted">igual que el anterior</span>
@@ -73,7 +73,7 @@ export function Delta({ current, previous, goodWhenUp = true }: { current: numbe
   const good = up === goodWhenUp
   return (
     <span className={good ? 'text-income' : 'text-expense'}>
-      {up ? '▲' : '▼'} {Math.abs(change).toFixed(0)}% <span className="text-muted">vs. anterior</span>
+      {up ? '▲' : '▼'} {Math.abs(change).toFixed(0)}% <span className="text-muted">{label}</span>
     </span>
   )
 }
