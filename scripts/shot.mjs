@@ -7,7 +7,8 @@ const errors = []
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message))
 page.on('console', (m) => m.type() === 'error' && errors.push('console: ' + m.text()))
 await page.goto(`http://127.0.0.1:1420/#${route}`)
-await page.waitForTimeout(1500)
+await page.waitForSelector('aside', { timeout: 20000 }).catch(() => {})
+await page.waitForTimeout(1200)
 await page.screenshot({ path: out, fullPage: false })
 const full = process.env.FULL
 if (full) await page.screenshot({ path: out.replace('.png', '-full.png'), fullPage: true })

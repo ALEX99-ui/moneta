@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Download, FileText } from 'lucide-react'
+import { Banknote, Download, FileText, PiggyBank, Percent, Target, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
 import { toast } from 'sonner'
 import { useApp } from '@/app/DataProvider'
 import { Button } from '@/components/ui/button'
@@ -87,7 +87,7 @@ export function ReportsScreen() {
 
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
         {model.kpis.map((k, i) => (
-          <StatCard key={k.label} title={k.label} value={displayCell(k.value, k.kind, data.settings.dateFormat)} icon={<span className="text-xs font-bold">{i + 1}</span>} tone={k.label.startsWith('Ingreso') ? 'income' : k.label.startsWith('Gasto') ? 'expense' : 'primary'} delay={i * 30}
+          <StatCard key={k.label} title={k.label} value={displayCell(k.value, k.kind, data.settings.dateFormat)} icon={kpiIcon(k.label)} tone={k.label.startsWith('Ingreso') ? 'income' : k.label.startsWith('Gasto') ? 'expense' : 'primary'} delay={i * 30}
             valueClassName={typeof k.value === 'number' && k.kind === 'money' && k.value < 0 && !k.label.startsWith('Gasto') ? 'text-expense' : undefined} />
         ))}
       </div>
@@ -100,6 +100,17 @@ export function ReportsScreen() {
       </div>
     </div>
   )
+}
+
+function kpiIcon(label: string) {
+  const l = label.toLowerCase()
+  if (l.startsWith('ingreso')) return <TrendingUp />
+  if (l.startsWith('gasto')) return <TrendingDown />
+  if (l.includes('%') || l.includes('tasa')) return <Percent />
+  if (l.includes('ahorro')) return <PiggyBank />
+  if (l.includes('meta')) return <Target />
+  if (l.includes('saldo') || l.includes('dinero')) return <Wallet />
+  return <Banknote />
 }
 
 function ReportCharts({ tab, model, range, year }: { tab: Tab; model: ReportModel; range: PeriodSelection; year: PeriodSelection }) {

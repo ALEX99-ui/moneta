@@ -70,7 +70,7 @@ export function goalProgress(goal: Goal, contributions: readonly Contribution[],
   if (completed) note = '¡Meta cumplida!'
   else if (monthlyPace === null) note = 'Aún no hay suficientes aportes para proyectar (se necesitan al menos 2 aportes o 30 días de historial).'
   else if (monthlyPace === 0) note = 'Sin aportes recientes: al ritmo actual la meta no avanza.'
-  else note = `Al ritmo de los últimos 90 días (${formatMoney(monthlyPace)} al mes) se cumpliría hacia ${eta}.`
+  else note = `Al ritmo de los últimos 90 días (${formatMoney(monthlyPace)} al mes) la meta se cumpliría`
 
   return { saved, remaining, percent, completed, monthlyPace, eta, requiredMonthly, onTrack, note }
 }

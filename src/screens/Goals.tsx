@@ -40,7 +40,7 @@ export function GoalsScreen() {
   const overAllocated = data.accounts.filter((a) => !a.archivedAt).map((a) => {
     const sum = active.filter((g) => g.accountId === a.id).reduce((s, g) => s + goalSaved(data.contributions, g.id), 0)
     return { a, sum, bal: balances.get(a.id) ?? 0 }
-  }).filter((x) => x.sum > x.bal)
+  }).filter((x) => x.sum > 0 && x.sum > x.bal)
 
   const archive = async (g: Goal) => {
     const ok = await confirm({ title: `¿Archivar «${g.name}»?`, description: 'Conserva su historial de aportes, pero deja de aparecer entre tus metas activas. Los aportes siguen contando como dinero asignado hasta que los retires.', confirmLabel: 'Archivar' })
@@ -105,7 +105,7 @@ export function GoalsScreen() {
                 </div>
                 <div className="mt-3 space-y-1 text-xs text-muted">
                   {g.targetDate && <p>Fecha objetivo: <span className="text-foreground">{fmt(g.targetDate)}</span>{p.requiredMonthly !== null && !p.completed && <> · necesitas ≈ <span className="num text-foreground">{formatMoney(p.requiredMonthly)}</span> al mes</>}</p>}
-                  <p>{p.note}</p>
+                  <p>{p.note}{p.eta && !p.completed && p.monthlyPace ? <> hacia el <span className="text-foreground">{fmt(p.eta)}</span>.</> : null}</p>
                   {p.onTrack !== null && !p.completed && <Badge tone={p.onTrack ? 'income' : 'warning'}>{p.onTrack ? 'Vas a tiempo' : 'Por debajo del ritmo necesario'}</Badge>}
                 </div>
                 <div className="mt-auto flex gap-2 pt-4">
