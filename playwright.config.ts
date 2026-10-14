@@ -1,4 +1,8 @@
 import { defineConfig } from '@playwright/test'
+import fs from 'node:fs'
+
+const LOCAL_CHROMIUM = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'
+const executablePath = process.env.PW_CHROMIUM ?? (fs.existsSync(LOCAL_CHROMIUM) ? LOCAL_CHROMIUM : undefined)
 
 // Pruebas de extremo a extremo contra la interfaz real, con SQLite real (puente de desarrollo) y base de datos nueva.
 export default defineConfig({
@@ -10,7 +14,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:1421',
     viewport: { width: 1440, height: 900 },
-    launchOptions: { executablePath: process.env.PW_CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--no-sandbox'] },
+    launchOptions: { executablePath, args: ['--no-sandbox'] },
     locale: 'es-CO',
     acceptDownloads: true,
   },

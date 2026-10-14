@@ -13,10 +13,6 @@ async function goto(path: string) {
   await page.goto(`/#${path}`)
   await page.waitForSelector('aside')
 }
-async function accountCard(name: string) {
-  await goto('/cuentas')
-  return page.locator('.surface', { hasText: name }).filter({ has: page.getByText('Saldo inicial') }).first()
-}
 async function totalInAccounts() {
   await goto('/cuentas')
   return page.locator('.surface', { hasText: 'Dinero total en cuentas' }).first().locator('p.num').first().innerText()
@@ -92,6 +88,32 @@ test('4. transferencia mueve dinero sin cambiar el total ni ingresos/gastos', as
   expect(await totalInAccounts()).toBe(money(4055000))
   await goto('/')
   await expect(page.getByText('Ahorro neto del período').locator('..').locator('..').getByText('+$ 2.955.000')).toBeVisible()
+})
+
+test('4b. editar y eliminar una transferencia recalcula ambos saldos y se puede deshacer', async () => {
+  await goto('/cuentas')
+  await page.getByRole('button', { name: 'Acciones de Banco' }).click()
+  await page.getByRole('menuitem', { name: 'Ver movimientos' }).click()
+  await page.getByRole('button', { name: 'Acciones de la transferencia' }).first().click()
+  await page.getByRole('menuitem', { name: 'Editar' }).click()
+  const top = page.getByRole('dialog').last()
+  await top.getByLabel('Valor', { exact: true }).fill('400000')
+  await top.getByRole('button', { name: 'Guardar cambios' }).click()
+  await page.keyboard.press('Escape')
+  await expect(page.locator('.surface', { hasText: 'Banco' }).getByText(money(3600000)).first()).toBeVisible()
+  await expect(page.locator('.surface', { hasText: 'Efectivo' }).getByText(money(455000)).first()).toBeVisible()
+  expect(await totalInAccounts()).toBe(money(4055000))
+
+  await page.getByRole('button', { name: 'Acciones de Banco' }).click()
+  await page.getByRole('menuitem', { name: 'Ver movimientos' }).click()
+  await page.getByRole('button', { name: 'Acciones de la transferencia' }).first().click()
+  await page.getByRole('menuitem', { name: 'Eliminar' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Eliminar' }).click()
+  await page.keyboard.press('Escape')
+  await expect(page.locator('.surface', { hasText: 'Banco' }).getByText(money(4000000)).first()).toBeVisible()
+  await page.getByRole('button', { name: 'Deshacer' }).last().click()
+  await expect(page.locator('.surface', { hasText: 'Banco' }).getByText(money(3600000)).first()).toBeVisible()
+  expect(await totalInAccounts()).toBe(money(4055000))
 })
 
 test('5. editar un gasto recalcula; eliminar pide confirmación y se puede deshacer', async () => {

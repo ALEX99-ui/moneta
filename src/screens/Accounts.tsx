@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Archive, ArchiveRestore, ArrowLeftRight, Ellipsis, List, Pencil, Plus, Wallet } from 'lucide-react'
+import { Archive, ArchiveRestore, ArrowLeftRight, Ellipsis, List, Pencil, Plus, Trash2, Wallet } from 'lucide-react'
+import { toast } from 'sonner'
 import { useApp, useLookups } from '@/app/DataProvider'
 import { useUI } from '@/app/UIProvider'
 import { Button } from '@/components/ui/button'
@@ -124,10 +125,20 @@ export function AccountsScreen() {
 
 /** Movimientos de una cuenta con saldo acumulado: permite verificar a mano cómo se llega al saldo. */
 function LedgerDialog({ accountId, onClose, focus }: { accountId: string | null; onClose: () => void; focus: string | null }) {
-  const { data } = useApp()
+  const { data, services, act } = useApp()
+  const ui = useUI()
+  const confirm = useConfirm()
   const l = useLookups()
   const fmt = useDateFmt()
   const acc = accountId ? l.accounts.get(accountId) : undefined
+  const removeTransfer = async (id: string) => {
+    const tr = data.transfers.find((t) => t.id === id)
+    if (!tr) return
+    const ok = await confirm({ title: '¿Eliminar esta transferencia?', description: `${formatMoney(tr.amount)} de ${l.accounts.get(tr.fromAccountId)?.name} a ${l.accounts.get(tr.toAccountId)?.name}. Ambos saldos se recalcularán. Podrás deshacerlo unos segundos después.`, confirmLabel: 'Eliminar', destructive: true })
+    if (!ok) return
+    const r = await act(() => services.transfers.remove(id))
+    if (r.ok) toast('Transferencia eliminada', { duration: 8000, action: { label: 'Deshacer', onClick: () => void act(() => services.transfers.restore(id), { success: 'Transferencia restaurada' }) } })
+  }
   const rows = React.useMemo(() => {
     if (!acc) return []
     type Row = { id: string; date: string; created: string; title: string; sub: string; delta: number; kind: 'income' | 'expense' | 'in' | 'out' }
@@ -160,7 +171,7 @@ function LedgerDialog({ accountId, onClose, focus }: { accountId: string | null;
               <p className="py-8 text-center text-sm text-muted">Esta cuenta aún no tiene movimientos.</p>
             ) : (
               <table className="w-full text-sm">
-                <thead><tr className="border-b text-left text-xs text-muted"><th className="py-2 font-medium">Fecha</th><th className="font-medium">Detalle</th><th className="text-right font-medium">Valor</th><th className="text-right font-medium">Saldo</th></tr></thead>
+                <thead><tr className="border-b text-left text-xs text-muted"><th className="py-2 font-medium">Fecha</th><th className="font-medium">Detalle</th><th className="text-right font-medium">Valor</th><th className="text-right font-medium">Saldo</th><th className="w-10" /></tr></thead>
                 <tbody>
                   {rows.map((r) => (
                     <tr key={r.id} id={`ld-${r.id.replace(':in', '')}`} className={cn('border-b border-[var(--border)]/60 last:border-0', focus && r.id.replace(':in', '') === focus && 'bg-primary/15')}>
@@ -168,6 +179,17 @@ function LedgerDialog({ accountId, onClose, focus }: { accountId: string | null;
                       <td><div className="truncate font-medium">{r.title}</div><div className="text-xs text-muted">{r.sub}</div></td>
                       <td className="text-right"><Amount value={r.delta} tone="auto" sign /></td>
                       <td className="num text-right text-muted">{formatMoney(r.balance)}</td>
+                      <td className="text-right">
+                        {(r.kind === 'in' || r.kind === 'out') && (
+                          <Menu>
+                            <MenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label="Acciones de la transferencia"><Ellipsis /></Button></MenuTrigger>
+                            <MenuContent>
+                              <MenuItem onSelect={() => { const tr = data.transfers.find((t) => t.id === r.id.replace(':in', '')); if (tr) ui.openTransfer({ editing: tr }) }}><Pencil /> Editar</MenuItem>
+                              <MenuItem danger onSelect={() => void removeTransfer(r.id.replace(':in', ''))}><Trash2 /> Eliminar</MenuItem>
+                            </MenuContent>
+                          </Menu>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
